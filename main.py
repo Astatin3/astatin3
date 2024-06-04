@@ -1,22 +1,18 @@
-import os
-import utils
-import web
+import src.web as web
 
-def html_home():
-  return utils.openFile("home.html")
+from src.pages import load_pages
 
-def blocks_home():
-  return utils.openFile("home.html")
+# pages = {
+#   "index": {
+#     "title": "Home",
+#     "get_html": html_home
+#   },
+#   "blocks": {
+#     "title": "Blocks",
+#     "get_html": blocks_home
+#   }
+# }
 
-pages = {
-  "home": {
-    "title": "Home",
-    "get_html": html_home
-  },
-  "blocks": {
-    "title": "Blocks",
-    "get_html": blocks_home
-  }
-}
 if __name__ == '__main__':
-   web.run_flask(pages)
+  web_pages, web_tabs = load_pages()
+  web.run_flask(web_pages, web_tabs)

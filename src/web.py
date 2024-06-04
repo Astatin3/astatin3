@@ -1,7 +1,7 @@
-from flask import Flask, render_template, session, request, send_from_directory
-import utils
+from flask import Flask
+import src.utils as utils
 
-def run_flask(pages):
+def run_flask(pages, tabs):
   app = Flask(__name__,
               static_url_path=utils.webroot,
               static_folder=utils.webroot,
@@ -11,13 +11,27 @@ def run_flask(pages):
     try:
       page = pages[path]
       return navbar_template(page["title"], page["get_html"]())
-    except:
+    except Exception as e:
+      print(f"Error loading page /{path}, error: {e}")
       return navbar_template("ERROR", "<h1>Error!</h1>")
 
+  def tab_template(tabs):
+    html = ""
+    for tab in tabs:
+      html += (utils.open_web_file("static/tab.html")
+               .replace("<!-- title -->", tab["title"])
+               .replace("<!-- href -->", tab["href"]))
+
+    return html
+
+
   def navbar_template(title: str, body: str):
-    return (utils.openFile("static/navbar.html")
+    return (utils.open_web_file("static/navbar.html")
             .replace("<!-- title -->", title)
-            .replace("<!-- body -->", body))
+            .replace("<!-- body -->", body)
+            .replace("<!-- tabs -->", tab_template(tabs)))
+
+
 
   @app.route('/')
   def flask_index():
