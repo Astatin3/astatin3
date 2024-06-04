@@ -1,8 +1,21 @@
+import time
 from threading import Thread
 import src.utils as utils
 from github import Github, Auth
 
 max_commit_num = 10
+
+auth = Auth.Token("")
+
+g = Github(auth=auth)
+user = g.get_user()
+
+scan_repos_list = []
+
+scan_repos_list.append(user.get_repos())
+scan_repos_list.append(g.get_organization("team4388").get_repos())
+
+page_html = "<h1 class='dark:text-white'>Loading...</h1>"
 
 class Repository:
   def __init__(self, repo, branch):
@@ -14,7 +27,7 @@ class Repository:
     commit_html = ""
 
     for i, commit in enumerate(self.commits):
-      if i >= min(max_commit_num, self.commits.totalCount):
+      if i >= min(max_commit_num, len(self.commits)):
         return commit_html
 
       html = utils.open_page_file("projects", "update.html")
@@ -27,10 +40,9 @@ class Repository:
 
 
 
-
   def html(self):
     html = utils.open_page_file("projects", "repo.html")
-    html = html.replace("<!-- name -->", (self.repo.full_name + ", " + self.branch.name))
+    html = html.replace("<!-- name -->", (self.repo.full_name + ", " + self.branch))
     html = html.replace("<!-- avatar-url -->", self.repo.owner.avatar_url)
 
     if self.repo.description is not None:
@@ -39,72 +51,90 @@ class Repository:
     if self.commits is not None:
       try:
         html = html.replace("<!-- updates -->", self.commit_html())
-      except:
-        pass
+      except Exception as e:
+        print(e)
 
     return html
 
-COMMIT_SVG = '<svg aria-hidden="true" focusable="false" role="img" class="Octicon-sc-9kayk9-0" viewBox="0 0 16 16" width="16" height="16" fill="currentColor" style="display:inline-block;user-select:none;vertical-align:text-bottom;overflow:visible"><path d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path></svg>'
+def branch_commits(current_commit):
+  commits = []
 
-auth = Auth.Token("<api key>")
+  # get commit info
+  while True:
+    if len(current_commit.parents) == 1:
+      # print(current_commit.committer.login )
+      if current_commit.committer.login == user.login:
+        commits.append(current_commit)
+      current_commit = current_commit.parents[0]
+    else:
+      return commits
 
-g = Github(auth=auth)
+def parse_commits(commit_list):
+  commits = []
+  for commit in commit_list:
+    commits.append(commit)
+  return commits
 
-scan_repos_list = []
+def unique_commits(master_commits, branch_commits):
+  msg_list = []
+  for commit in master_commits:
+    msg_list.append(commit.sha)
+  return msg_list
 
-scan_repos_list.append(g.get_user().get_repos())
-scan_repos_list.append(g.get_organization("team4388").get_repos())
-
-page_html = "<h1 class='dark:text-white'>Loading...</h1>"
 
 def update_repos():
   repo_list_html = []
 
-  for repo_list in scan_repos_list:
-    for repo in repo_list:
+  # for repo_list in scan_repos_list:
+  #   for repo in repo_list:
 
-      master_commits = None
+  repo = g.get_organization("team4388").get_repo("scoutingapp2024")
+  print(repo)
 
-      # print(repo.full_name)
+  total_commits = 0
 
-      try:
-        master_commits = repo.get_commits(author=g.get_user())
-        if master_commits.totalCount == 0:
-          continue
-      except Exception as e:
-        continue
+  try:
+    master_commits = parse_commits(repo.get_commits(author=user))
+    total_commits += len(master_commits)
+  except Exception as e:
+    return #continue
 
-      for branch in repo.get_branches():
 
-        print(repo.full_name + ", " + branch.name)
-        if branch.name == repo.default_branch:
-          repository = Repository(repo, branch)
-          repository.commits = master_commits
+  repository = Repository(repo, repo.default_branch)
+  repository.commits = master_commits
+  html = repository.html()
 
-          repo_list_html.append(repository.html())
-          continue
+  if total_commits > 0:
+    repo_list_html.append(html)
 
-        commits = None
 
-        try:
-          commits = repo.get_commits(author=g.get_user())
-          if commits.totalCount == 0:
-            print("continue")
-            continue
-        except Exception as e:
-          print(e)
-          continue
+  for branch in repo.get_branches():
 
-        print(commits.totalCount-master_commits.totalCount)
+    print(repo.full_name + ", " + branch.name)
+    if branch.name == repo.default_branch:
+      continue
 
-        if commits.totalCount > master_commits.totalCount:
-          repository = Repository(repo, branch)
-          repository.commits = commits
+    try:
+      commits = branch_commits(branch.commit)
+      total_commits += len(commits)
 
-          print(repository.html())
+      print(unique_commits(master_commits, commits))
+      print(len(commits) - len(master_commits), len(commits), len(master_commits))
+
+      if len(commits) >= len(master_commits):
+        repository = Repository(repo, branch.name)
+        repository.commits = commits
+
+        repo_list_html.append(repository.html())
+    except Exception as e:
+      print(e)
+      continue
 
     # return utils.open_page_file("blocks", "blocks.html")
+
+  # if total_commits > 0:
   global page_html
+  print(total_commits)
   page_html = utils.open_page_file("projects", "projects.html").replace("<!-- repos -->", ''.join(repo_list_html))
 
 def get_html():
