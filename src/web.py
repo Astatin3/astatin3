@@ -10,9 +10,13 @@ def run_flask(pages, tabs):
   def find_page(path):
     try:
       page = pages[path[0]]
-      return navbar_template(page["title"], page["get_html"](path))
+      content, is_raw = page["get_html"](path)
+      if is_raw:
+        return content
+      else:
+        return navbar_template(page["title"], content)
     except Exception as e:
-      print(f"Error loading page /{path}, error: {e}")
+      print(f"Error loading page /{'/'.join(path)}, error: {e}")
       return navbar_template("ERROR", "<h1>Error!</h1>")
 
   def tab_template(tabs):
@@ -32,6 +36,12 @@ def run_flask(pages, tabs):
             .replace("<!-- tabs -->", tab_template(tabs)))
 
 
+  def error_path_traversal():
+    return (utils.open_web_file("static/navbar.html")
+            .replace("<!-- title -->", "Nu uh")
+            .replace("<!-- body -->", "Nu uh")
+            .replace("<!-- tabs -->", tab_template(z)))
+
 
   @app.route('/')
   def flask_index():
@@ -39,14 +49,20 @@ def run_flask(pages, tabs):
 
   @app.route('/<path:page>')
   def flask_page(page):
+    if '..' in page:
+      return error_path_traversal()
     return find_page(page.split('/'))
 
   @app.route('/src/<path:file>')
   def flask_src_dir(file):
+    if '..' in file:
+      return error_path_traversal()
     return app.send_static_file("src/" + file)
 
   @app.route('/images/<path:file>')
   def flask_images_dir(file):
+    if '..' in file:
+      return error_path_traversal()
     return app.send_static_file("images/" + file)
 
   app.run(host='0.0.0.0', port=80, debug=True)

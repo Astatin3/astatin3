@@ -22,6 +22,21 @@ def open_file(path):
   except:
     return ''
 
+def open_file_raw(path):
+  if not os.path.exists(path):
+    return ''
+  try:
+    with open(path, 'rb') as f:
+      return f.read()
+  except:
+    return ''
+
+def list_subdirs(path):
+  try:
+    return os.listdir(path)
+  except:
+    return []
+
 def open_web_file(path):
   return open_file(webroot + path)
 
