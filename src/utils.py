@@ -34,4 +34,5 @@ def load_script(path, name):
   spec = importlib.util.spec_from_file_location(name, get_root(path))
   module = importlib.util.module_from_spec(spec)
   spec.loader.exec_module(module)
+  module.init()
   return module
