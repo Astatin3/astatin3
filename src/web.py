@@ -9,8 +9,8 @@ def run_flask(pages, tabs):
 
   def find_page(path):
     try:
-      page = pages[path]
-      return navbar_template(page["title"], page["get_html"]())
+      page = pages[path[0]]
+      return navbar_template(page["title"], page["get_html"](path))
     except Exception as e:
       print(f"Error loading page /{path}, error: {e}")
       return navbar_template("ERROR", "<h1>Error!</h1>")
@@ -35,11 +35,11 @@ def run_flask(pages, tabs):
 
   @app.route('/')
   def flask_index():
-    return find_page("index")
+    return find_page(["","index"])
 
-  @app.route('/<path:path>')
-  def flask_page(path):
-    return find_page(path)
+  @app.route('/<path:page>')
+  def flask_page(page):
+    return find_page(page.split('/'))
 
   @app.route('/src/<path:file>')
   def flask_src_dir(file):

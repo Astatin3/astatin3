@@ -1,7 +1,0 @@
-{
-  "path": "projects",
-  "tab": true,
-  "tab_index": 1,
-  "title": "Projects",
-  "entrypoint": "projects.py"
-}
