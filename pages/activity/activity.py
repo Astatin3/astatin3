@@ -182,7 +182,7 @@ def update_repos_loop():
     time.sleep(60 * 60) # One hour
 
 def get_html(path):
-  return page_html
+  return page_html, False
 
 def init():
   Thread(target=update_repos_loop).start()
