@@ -20,7 +20,7 @@ def run_flask(pages, tabs):
     for tab in tabs:
       html += (utils.open_web_file("static/tab.html")
                .replace("<!-- title -->", tab["title"])
-               .replace("<!-- href -->", tab["href"]))
+               .replace("<!-- href -->", "/"+tab["href"]))
 
     return html
 

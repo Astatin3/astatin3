@@ -1,3 +1,4 @@
+import time
 import numpy as np
 from threading import Thread
 import src.utils as utils
@@ -175,8 +176,13 @@ def update_repos():
   np_list_html = np.array(repo_list_html)
   page_html = utils.open_page_file("activity", "activity.html").replace("<!-- repos -->", ''.join(np_list_html[timeinds[::-1]]))
 
+def update_repos_loop():
+  while True:
+    update_repos()
+    time.sleep(60 * 60) # One hour
+
 def get_html(path):
   return page_html
 
 def init():
-  Thread(target=update_repos).start()
+  Thread(target=update_repos_loop).start()
