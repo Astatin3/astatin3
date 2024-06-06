@@ -4,7 +4,7 @@ from threading import Thread
 import src.utils as utils
 from github import Github, Auth
 
-auth = Auth.Token(utils.open_file("api_key.txt"))
+auth = Auth.Token(utils.open_file("api_key.txt").strip())
 g = Github(auth=auth)
 user = g.get_user()
 
@@ -19,9 +19,9 @@ scan_repos = {
     # 'team4388'
   ],
   'additional_repos': [
-    # g.get_organization("team4388").get_repo("ScoutingApp2024"),
+    g.get_organization("team4388").get_repo("ScoutingApp2024")
     # g.get_organization("team4388").get_repo("ScoutingApp2025"),
-    g.get_organization("team4388").get_repo("autoPlanner2025")
+    # g.get_organization("team4388").get_repo("autoPlanner2025")
   ]
 }
 
@@ -116,7 +116,8 @@ def commits_time(commits):
 
 def update_repos():
 
-  repos_list = scan_repos['additional_repos']
+  repos_list = []
+  repos_list += scan_repos['additional_repos']
 
   for scan_user in scan_repos['users']:
     repos_list += un_pageinate(g.get_user(scan_user).get_repos())

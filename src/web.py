@@ -45,7 +45,7 @@ def run_flask(pages, tabs):
 
   @app.route('/')
   def flask_index():
-    return find_page(["","index"])
+    return find_page(["index"])
 
   @app.route('/<path:page>')
   def flask_page(page):
@@ -65,4 +65,4 @@ def run_flask(pages, tabs):
       return error_path_traversal()
     return app.send_static_file("images/" + file)
 
-  app.run(host='0.0.0.0', port=80, debug=True)
+  app.run(host='0.0.0.0', port=80, debug=False)
