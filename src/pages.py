@@ -10,7 +10,7 @@ def load_pages():
   return_tabs = []
 
   for folder in module_folders:
-    try:
+    # try:
       page_json = json.loads(open(utils.get_root(f'pages/{folder}/page.json')).read())
 
       new_page = {}
@@ -30,8 +30,8 @@ def load_pages():
       return_pages[page_json['path']] = new_page
 
       print(f"Loaded {utils.get_root(f'pages/{folder}')}")
-    except Exception as e:
-      print(f"Failed to load \"{utils.get_root(f'pages/{folder}')}\" Error: \"{e}\"")
+    # except Exception as e:
+    #   print(f"Failed to load \"{utils.get_root(f'pages/{folder}')}\" Error: \"{e}\"")
 
 
   return return_pages, return_tabs
