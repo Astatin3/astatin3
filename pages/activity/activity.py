@@ -3,7 +3,7 @@ import numpy as np
 from threading import Thread
 import src.utils as utils
 from github import Github, Auth
-
+3
 auth = Auth.Token(utils.open_file("api_key.txt").strip())
 g = Github(auth=auth)
 user = g.get_user()
