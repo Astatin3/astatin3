@@ -82,20 +82,54 @@ class window_box {
       this.text = text
   }
 
+  getTextAt(char){
+      let cur_chars = 0;
+      for(let i = 0; i < this.text.length; i++){
+        if(char - cur_chars < this.text[i][1].length){
+            return [this.text[i], char - cur_chars]
+        }
+        cur_chars += this.text[i][1].length
+      }
+      return [["","",""],0]
+
+  }
+
   onresize(){
     this.windowdata = [
         box_tl_char+box_t_char.repeat(this.width-2)+box_tr_char
     ]
+
+    let text_length = 0;
+    for(let i = 0; i < this.text.length; i++){
+        text_length += this.text[i][1].length
+    }
+
     let current_text_char = 0;
     for(let y = 0; y < this.height; y++){
         let line = box_l_char;
         for(let x = 0; x < this.width-2; x++){
-            if(current_text_char < this.text.length){
+            let text = this.getTextAt(current_text_char)
+
+            let cur_text = text[0]
+            let local_char = text[1]
+
+            // console.log(local_char-cur_text[1].length)
+
+            if(x === 0 || local_char === 0){
+                line += cur_text[0]
+            }
+
+            if(local_char+1 <= cur_text[1].length){
                 current_text_char++
-                line += this.text.charAt(current_text_char-1)
+                line += cur_text[1].charAt(current_text_char-1)
+
+              if(x+1 === this.width-2 || local_char+1 === cur_text[1].length){
+                line += cur_text[2]
+              }
             }else{
                 line += box_fill_char
             }
+
         }
         line += box_r_char
         this.windowdata.push(line)
@@ -110,8 +144,14 @@ class window_box {
     const right  = this.x+this.width;
 
     for(let i = Math.max(top,0); i <= Math.min(bottom+1,term.rows); i++){
-        term.write(goto_char(Math.max(left,0),i) + (this.windowdata[i-top].substring(Math.max(-left,0),Math.min(right,term.cols)-left+1)) )
+        term.write(goto_char(Math.max(left,0),i) + (this.windowdata[i-top].substring(
+           Math.max(-left,0),
+           Math.min(term.cols - (this.width-this.windowdata[i-top].length), left+this.windowdata[i-top].length)-left
+        )))
     }
+
+    console.log(Math.min(term.cols - (this.width-this.windowdata[0].length), left+this.windowdata[0].length)-left)
+
     // console.log(left)
     //   console.log(Math.max(-left,0))
   }
@@ -218,11 +258,11 @@ class window_box {
 }
 
 
-let w1 = new window_box(35, 50, 10, 10, "Some test data!!! 12345678901234567890123456789012345678901234567890")
+let w1 = new window_box(35, 50, 10, 10, [[set_forground(255,255,0),"Some test data!!! 12345678901234567890123456789012345678901234567890",set_forground(255,255,255)]])
 windows.push(w1)
-let w2 = new window_box(35, 50, 20, 20, "Some test data!!! 12345678901234567890123456789012345678901234567890")
+let w2 = new window_box(35, 50, 20, 20, [["<","Some test data!!! wqerwerposaeguhferek,uiawygdfxkuwe",">"]])
 windows.push(w2)
-let w3 = new window_box(35, 50, 30, 30, "Some test data!!! 12345678901234567890123456789012345678901234567890")
+let w3 = new window_box(35, 50, 30, 30, [["","Some test data!!! 12345678901234567890123456789012345678901234567890",""]])
 windows.push(w3)
 
 function reload(){
