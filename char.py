@@ -3,9 +3,12 @@ import io
 
 FONT_LOC = " ~/.config/sway/UbuntuMonoNerdFontMono-Regular.ttf"
 
-background_color = (0, 0, 0)
+# background_color = (0, 0, 0)
+# text_color = (0, 127, 0)
 
-text_color = (0, 127, 0)
+
+background_color = (255, 255, 255)
+text_color = (127, 127, 127)
 
 def create_ascii_char_gif(chars, duration=500):
     images = []
@@ -89,6 +92,6 @@ def website_cursor():
 #     "/.-~^*@#",
 # ])
 
-# ascii_char("`")
+ascii_char("`")
 
-website_cursor()
+# website_cursor()
