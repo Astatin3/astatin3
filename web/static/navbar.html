@@ -19,9 +19,11 @@
   }
 }
 
+
+
   </style>
 </head>
-<body class="dark:bg-gray-800 dark:text-white light:text-black dark:bg-[url('/images/bg-black.png')] bg-[url('/images/bg-white.png')]">
+<body class="dark:bg-black dark:text-white light:text-black" onload="noise()">
   <nav class="bg-repeat header text-white" style="background-image: url('/images/animated_char.gif');">
     <img class="absolute" style="top:0;left:0;" src="/images/cursor.gif" />
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-3">
@@ -36,6 +38,7 @@
       </button>
     </div>
   </nav>
+  <canvas id="terminalCanvas" style="z-index: -1; position: absolute; display: flex; flex-wrap: wrap;"></canvas>
 
     <!-- body -->
 
@@ -83,4 +86,7 @@ for(let i=0;i<times.length;i++){
 }
 
     </script>
+    <script src="/src/noise.js"></script>
+    <script src="/src/term.js"></script>
+    <script src="/src/background.js"></script>
 </body>

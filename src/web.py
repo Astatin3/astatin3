@@ -65,4 +65,4 @@ def run_flask(pages, tabs):
       return error_path_traversal()
     return app.send_static_file("images/" + file)
 
-  app.run(host='0.0.0.0', port=80, debug=False)
+  app.run(host='0.0.0.0', port=8080, debug=False)
