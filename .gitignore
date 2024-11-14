@@ -1,6 +1,9 @@
-__pycache__/
-*.pyc
-api_key.txt
+debug/
+target/
+dist/
 
-ssl.crt
-ssl.key
+Cargo.lock
+
+**/*.rs.bk
+
+*.pdb

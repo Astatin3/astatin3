@@ -1,7 +1,0 @@
-{
-  "path": "activity",
-  "tab": true,
-  "tab_index": 2,
-  "title": "Activity",
-  "entrypoint": "activity.py"
-}
