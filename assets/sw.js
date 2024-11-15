@@ -3,7 +3,7 @@ var filesToCache = [
   './',
   './index.html',
   './website.js',
-  './website_bg.wasm',
+  './website_bg.wasm'
 ];
 
 /* Start the service worker and cache all of the app's content */
@@ -21,5 +21,5 @@ self.addEventListener('fetch', function (e) {
     caches.match(e.request).then(function (response) {
       return response || fetch(e.request);
     })
-  );
-});
+  )
+})

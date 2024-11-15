@@ -1,68 +1,116 @@
-use egui::{Color32, FontFamily, Frame, Theme, Visuals};
-use egui_commonmark::{CommonMarkCache, CommonMarkViewer};
+use eframe::epaint::Color32;
+use egui::{FontFamily, FontId, RichText, Visuals};
+use egui_commonmark::{commonmark_str, CommonMarkCache, CommonMarkViewer};
+use crate::content;
+use crate::content::Tab;
+include!(concat!(env!("OUT_DIR"), "/page-loader.rs"));
 
-const MD: &str = r#"
-# **H1!**
-## H2!
-### H3!
-[LINK](https://astatin3.dev)
-"#;
-
+/// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
-#[serde(default)]
+#[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct App {
-    #[serde(skip)]
-    common_mark_cache: CommonMarkCache,
-}
+    // Example stuff:
+    label: String,
 
-impl App {
-    pub fn name() -> &'static str {
-        "TEST APP"
-    }
+    #[serde(skip)]
+    value: f32,
+    cur_tab: usize,
+    #[serde(skip)]
+    cache: CommonMarkCache,
 }
 
 impl Default for App {
     fn default() -> Self {
         Self {
-            common_mark_cache: CommonMarkCache::default()
+            // Example stuff:
+            label: "Hello World!".to_owned(),
+            value: 2.7,
+            cur_tab: 0,
+            cache: CommonMarkCache::default(),
         }
     }
 }
 
+impl App {
+    /// Called once before the first frame.
+    pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        // This is also where you can customize the look and feel of egui using
+        // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
+
+        // Load previous app state (if any).
+        // Note that you must enable the `persistence` feature for this to work.
+        if let Some(storage) = cc.storage {
+            return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
+        }
+
+        Default::default()
+    }
+}
+
 impl eframe::App for App {
-    // fn save(&mut self, storage: &mut dyn eframe::Storage) {
-    //     eframe::set_value(storage, eframe::APP_KEY, self);
-    // }
+    /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
+        // For inspiration and more examples, go to https://emilk.github.io/egui
 
-        let frame = Frame {
-            fill: {
-                if ctx.system_theme().unwrap() == Theme::Dark  {
-                    Color32::from_rgb(64,64,64)
-                } else {
-                    Color32::from_rgb(144,144,144)
+        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+            // The top panel is often a good place for a menu bar:
+
+            egui::menu::bar(ui, |ui| {
+                // NOTE: no File->Quit on web pages!
+                let is_web = cfg!(target_arch = "wasm32");
+                if !is_web {
+                    ui.menu_button("File", |ui| {
+                        if ui.button("Quit").clicked() {
+                            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                        }
+                    });
+                    ui.add_space(16.0);
                 }
-            },
-            ..Default::default()
-        };
 
-        egui::CentralPanel::default().frame(Frame::none()).show(ctx, |ui| {
-            ui.style_mut().url_in_tooltip = true;
+                egui::widgets::global_theme_preference_switch(ui);
 
+                ui.separator();
+                ui.monospace("ASTATIN3.dev");
+                ui.separator();
 
-            egui::TopBottomPanel::top("BAR").show(ctx, |ui| {
-                egui::menu::bar(ui, |ui| {
-                    egui::widgets::global_theme_preference_switch(ui);
-                    let _ = ui.colored_label(Color32::GREEN, "ASTATIN3.dev");
-                });
+                for (i, tab) in PAGE_FILES.iter().enumerate() {
+                    ui.selectable_value(&mut self.cur_tab, i, tab.to_string());
+                }
+
+                // ui.selectable_value(&mut self.tab, 0, "First");
+                // ui.selectable_value(&mut self.tab, 1, "Second");
+                // ui.selectable_value(&mut self.tab, 2, "Third");
             });
+        });
 
-            egui::ScrollArea::vertical().show(ui, |ui| {
-                CommonMarkViewer::new().show_scrollable("viewer", ui, &mut self.common_mark_cache, MD);
-                // let painter = ui.painter();
-                // painter.rect(egui::Rect {min:egui::Pos2{x: 0., y: 0.},max:egui::Pos2{x: 100., y: 100.}}, 0., Color32::WHITE, egui::Stroke::NONE);
-            });
+        egui::CentralPanel::default().show(ctx, |ui| {
+            egui::scroll_area::ScrollArea::vertical().show(ui, |mut ui| {
+                if PAGE_FILES.len() != 0 {
+                    get_page(self.cur_tab, &mut ui, &mut self.cache);
+                    // CommonMarkViewer::new().show(ui, &mut tab.cache, &*tab.content);
+                    // commonmark_str!(ui, &mut tab.cache, "assets/content/test.md");
+                }
+            })
         });
     }
 
+    /// Called by the frame work to save state before shutdown.
+    fn save(&mut self, storage: &mut dyn eframe::Storage) {
+        eframe::set_value(storage, eframe::APP_KEY, self);
+    }
+}
+
+fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
+    ui.horizontal(|ui| {
+        ui.spacing_mut().item_spacing.x = 0.0;
+        ui.label("Powered by ");
+        ui.hyperlink_to("egui", "https://github.com/emilk/egui");
+        ui.label(" and ");
+        ui.hyperlink_to(
+            "eframe",
+            "https://github.com/emilk/egui/tree/master/crates/eframe",
+        );
+        ui.label(".");
+    });
 }
