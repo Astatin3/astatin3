@@ -1,7 +1,0 @@
-{
-  "path": "blog",
-  "tab": true,
-  "tab_index": 1,
-  "title": "Blog",
-  "entrypoint": "blog.py"
-}

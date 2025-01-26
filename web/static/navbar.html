@@ -3,90 +3,35 @@
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-
-.header {
-    /*height: 68px;*/
-  /*animation: diagonalMove 8s linear infinite;*/
-}
-
-@keyframes diagonalMove {
-  0% {
-    background-position: 12.5% 0%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
-}
-
-
-
-  </style>
 </head>
-<body class="dark:bg-black dark:text-white light:text-black" onload="noise()">
-  <nav class="bg-repeat header text-white" style="background-image: url('/images/animated_char.gif');">
-    <img class="absolute" style="top:0;left:0;" src="/images/cursor.gif" />
-    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-3">
-      <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-          <img src="/images/favicon.ico" class="h-8"/>
-          <span class="self-center text-l sm:text-2xl font-semibold whitespace-nowrap">Astatin3</span>
-      </a>
-      <!-- tabs -->
-      <button onclick=" window.location.href ='https://github.com/astatin3' " data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 text-gra0y-400 hover:bg-gray-700 focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
-          <span class="sr-only">Open main menu</span>
-          <img src="/images/github-mark-white.svg"/>
-      </button>
-    </div>
-  </nav>
-  <canvas id="terminalCanvas" style="z-index: -1; position: absolute; display: flex; flex-wrap: wrap;"></canvas>
+<body class="bg-black text-white bg-[size:8px_8px] bg-left-top bg-[image:repeating-linear-gradient(45deg,grey_0,grey_0.5px,transparent_0,transparent_50%)]">
+<!--<body class="bg-blue-500">-->
 
-    <!-- body -->
+<div class="w-full flex bg-[size:8px_8px] bg-left-top bg-[image:repeating-linear-gradient(315deg,grey_0,grey_1px,transparent_0,transparent_50%)]">
+  <p>ASTATIN3.dev = [</p>
+  <!-- tabs -->
+  <a href="https://github.com/astatin3" class="mx-[5%] hover:border [&:not(:hover)]:p-[1px] border-dotted border-white">../GitHub</a>
+  <p>]</p>
+</div>
 
-    <script>
+<!--  <nav class="bg-repeat header text-white bg-gray-900">-->
+<!--    <img class="absolute" style="top:0;left:0;" src="/images/cursor.gif" />-->
+<!--    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-3">-->
+<!--      <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">-->
+<!--          <img src="/images/favicon.ico" class="h-8"/>-->
+<!--          <span class="self-center text-l sm:text-2xl font-semibold whitespace-nowrap">Astatin3</span>-->
+<!--      </a>-->
+<!--      &lt;!&ndash; tabs &ndash;&gt;-->
+<!--      <button onclick=" window.location.href ='https://github.com/astatin3' " data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 text-gra0y-400 hover:bg-gray-700 focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">-->
+<!--          <span class="sr-only">Open main menu</span>-->
+<!--          <img src="/images/github-mark-white.svg"/>-->
+<!--      </button>-->
+<!--    </div>-->
+<!--  </nav>-->
 
-let now = new Date()
-function format_time(Millis){
-  const date = new Date(Millis)
+<div class="container mx-auto flex bg-[size:16px_16px] bg-left-top bg-[image:repeating-linear-gradient(135deg,grey_0,grey_0.5px,transparent_0,transparent_50%)]">
+<!-- body -->
+</div>
 
-  if(date.getDate() != now.getDate()){
-    return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear()
-  }else{
-    var Hour = ""
-    var Minute = ""
-    var AmPm = ""
-
-    if(date.getHours() == 0){
-      Hour = "12"
-      AmPm = "AM"
-    }else if(date.getHours() < 12){
-      Hour = date.getHours()
-      AmPm = "AM"
-    }else if(date.getHours() == 12){
-      Hour = "12"
-      AmPm = "PM"
-    }else{
-      Hour = date.getHours() - 12
-      AmPm = "PM"
-    }
-
-    if(date.getMinutes() < 10){
-      Minute = "0" + date.getMinutes()
-    }else{
-      Minute = date.getMinutes()
-    }
-
-    return Hour + ":" + Minute + " " + AmPm
-
-  }
-}
-
-times = document.body.getElementsByClassName("format-time")
-for(let i=0;i<times.length;i++){
-    times[i].innerText = format_time(Number(times[i].innerText)*1000)
-}
-
-    </script>
-    <script src="/src/noise.js"></script>
-    <script src="/src/term.js"></script>
-    <script src="/src/background.js"></script>
+    <script src="/src/date.js"></script>
 </body>
